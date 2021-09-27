@@ -30,34 +30,32 @@ _text_ui_write_char:
     add hl, bc
     ld bc, hl                       ; bc now holds a pointer to characted data
 
-    ld l, 8                         ; try 8 times
     ld a, ixl
     and a
     jp z, write_char_loop_even
 
 write_char_loop_odd:
-    ld a, (de)                      ; what's currently on screen?
-    ld h, a
-    ld a, (bc)                      ; get next 8 bit row of the character data
-    inc bc
-    and $0F                         ; we want the second half only
-    or h
-    ld (de), a                      ; put it on screen
-    inc d                           ; get to the next row (+ 256)
-    dec l
-    jp nz, write_char_loop_odd      ; loop 8 times
+    include "text_ui_routine_odd.inc"
+    include "text_ui_routine_odd.inc"
+    include "text_ui_routine_odd.inc"
+    include "text_ui_routine_odd.inc"
+    include "text_ui_routine_odd.inc"
+    include "text_ui_routine_odd.inc"
+    include "text_ui_routine_odd.inc"
+    include "text_ui_routine_odd.inc"
 
     ld ixl, 0                       ; we're even now
     ret
 
 write_char_loop_even:
-    ld a, (bc)                      ; get next 8 bit row of the character data
-    inc bc
-    and $F0                         ; we want the first half only
-    ld (de), a                      ; put it on screen
-    inc d                           ; get to the next row (+ 256)
-    dec l
-    jp nz, write_char_loop_even     ; loop 8 times
+    include "text_ui_routine_even.inc"
+    include "text_ui_routine_even.inc"
+    include "text_ui_routine_even.inc"
+    include "text_ui_routine_even.inc"
+    include "text_ui_routine_even.inc"
+    include "text_ui_routine_even.inc"
+    include "text_ui_routine_even.inc"
+    include "text_ui_routine_even.inc"
 
     ld ixl, 1                       ; we're odd now
     ret
