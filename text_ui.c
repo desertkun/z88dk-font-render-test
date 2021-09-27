@@ -4,7 +4,6 @@
 
 uint8_t text_x, text_y, text_color;
 
-extern void text_ui_puts(const char* s) __z88dk_fastcall;
 extern void text_ui_write(const char* buf, uint16_t buflen) __z88dk_callee;
 
 void text_ui_init(void)
@@ -17,15 +16,9 @@ void text_ui_at(uint8_t x, uint8_t y)
     text_y = y;
 }
 
-void text_ui_puts_at(uint8_t x, uint8_t y, const char* s)
+void text_ui_puts_at(uint8_t x, uint8_t y, const char* s) __z88dk_callee
 {
-    text_x = x;
-    text_y = y;
-    text_ui_puts(s);
-
-    uint8_t* c = zx_cxy2aaddr(x, y);
-    uint8_t l = strlen(s);
-    memset(c, text_color, (l >> 1) + (l & 0x01));
+    text_ui_write_at(x, y, s, strlen(s));
 }
 
 void text_ui_write_at(uint8_t x, uint8_t y, const char* buf, uint16_t buflen) __z88dk_callee

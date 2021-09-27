@@ -1,8 +1,7 @@
-    ld a, (de)                      ; what's currently on screen?
-    ld h, a
-    ld a, (bc)                      ; get next 8 bit row of the character data
-    inc bc
-    and $0F                         ; we want the second half only
-    or h
-    ld (de), a                      ; put it on screen
-    inc d                           ; get to the next row (+ 256)
+    ld a, (de)                      ; get next 8 bit row of the character data
+    and $0F
+    or (hl)                         ; combine with what's on screen
+    ld (hl), a                      ; put it on screen
+
+    inc de
+    inc h                           ; get to the next row (+ 256)
