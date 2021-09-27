@@ -1,0 +1,8 @@
+*.o
+*.sym
+/.idea
+/example
+/example__.bin
+/example_BANK_7.bin
+/example.map
+/example.tap
