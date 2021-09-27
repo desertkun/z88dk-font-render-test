@@ -29,10 +29,9 @@ _text_ui_write:
     call _text_ui_get_screen_addr   ; hl now holds a screen address
 
 _text_ui_write_loop:
+    ; even
     include "text_ui_routine_loop_header.inc"
 
-    ; even
-
     include "text_ui_routine_even.inc"
     inc h
     include "text_ui_routine_even.inc"
@@ -49,7 +48,7 @@ _text_ui_write_loop:
     inc h
     include "text_ui_routine_even.inc"
 
-    ld a, h                         ; restore (h)l from 8 increments
+    ld a, h                         ; restore (h)l from 7 increments
     sub 7
     ld h, a
     inc bc                          ; onto next character
@@ -83,5 +82,3 @@ _text_ui_write_loop:
     dec ixl                         ; do we have more to print?
     ret z                           ; we're done
     jp _text_ui_write_loop
-
-write_char_loop_even:
