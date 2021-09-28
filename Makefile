@@ -6,11 +6,14 @@ ifneq (,$(JUST_PRINT))
 CC = gcc -D__z88dk_callee=""
 else
 CC = zcc
-CFLAGS = +zx -debug
+CFLAGS = +zx
 EXAMPLE_FLAGS = -m -lndos -create-app
 endif
 
-all: example__.bin example.tap
+all: font_4x8_even.bin font_4x8_odd.bin example__.bin example.tap
+
+font_4x8_even.bin font_4x8_odd.bin:
+	python3 generate.py
 
 example__.bin: $(OBJECTS)
 	$(CC) $(CFLAGS) $(EXAMPLE_FLAGS) -o example $(OBJECTS) -subtype=bin

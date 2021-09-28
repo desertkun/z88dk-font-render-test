@@ -16,9 +16,8 @@ int main()
 
     for (uint8_t at = 0; at < 24; at++)
     {
-        char* part = text_ui_buffer_partition(p, left, 32);
-        text_ui_write_at(0, at, p, part - p);
-        p = part;
+        text_ui_write_at(0, at, p, 32);
+        p += 64;
     }
 
 }

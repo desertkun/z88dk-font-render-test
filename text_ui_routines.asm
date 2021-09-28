@@ -4,81 +4,84 @@ EXTERN asm_zx_cxy2saddr
 EXTERN _font_4x8_80columns
 PUBLIC _text_ui_write
 
-defc font = _font_4x8_80columns
+font_even:
+    binary "font_4x8_even.bin"
 
-_text_ui_get_screen_addr:
-    ld a, (_text_x)                 ; get initial screen address
-    ld l, a
-    ld a, (_text_y)
-    ld h, a
-    jp asm_zx_cxy2saddr             ; hl now holds a screen address
+font_odd:
+    binary "font_4x8_odd.bin"
 
 ; stack: string to write
 ; stack: amount to write
 ; registers used:
-;     ixl - number of characters left to write
-;     hl - current screen address
-;     de - current characted data address
-;     bc - current string address
+;     iyl - number of characters left to write
+;     de - current screen address
+;     bc - current characted A data address
+;     hl - current character B data address
+;     ix - current string address
 _text_ui_write:
     pop hl                          ; ret
-    pop ix                          ; pop the amount into ix
-    pop bc                          ; pop string address into bc
+    pop iy                          ; pop the amount into iyl
+    pop ix                          ; pop string address into ix
     push hl                         ; ret
 
-    call _text_ui_get_screen_addr   ; hl now holds a screen address
+    ld a, (_text_x)                 ; get initial screen address
+    ld l, a
+    ld a, (_text_y)
+    ld h, a
+    call asm_zx_cxy2saddr
+
+    ex de, hl                       ; de now holds a screen address
 
 _text_ui_write_loop:
-    ; even
-    include "text_ui_routine_loop_header.inc"
+    ld h, 0
+    ld l, (ix)
+    inc ix
 
-    include "text_ui_routine_even.inc"
-    inc h
-    include "text_ui_routine_even.inc"
-    inc h
-    include "text_ui_routine_even.inc"
-    inc h
-    include "text_ui_routine_even.inc"
-    inc h
-    include "text_ui_routine_even.inc"
-    inc h
-    include "text_ui_routine_even.inc"
-    inc h
-    include "text_ui_routine_even.inc"
-    inc h
-    include "text_ui_routine_even.inc"
+    add hl, hl
+    add hl, hl
+    add hl, hl                      ; multiply by 8
+    add hl, font_odd - 32 * 8
 
-    ld a, h                         ; restore (h)l from 7 increments
+    ld bc, hl                       ; bc now holds characted data A
+
+    ld h, 0
+    ld l, (ix)
+    inc ix
+
+    add hl, hl
+    add hl, hl
+    add hl, hl                      ; multiply by 8
+    add hl, font_even - 32 * 8      ; hl now holds characted data B
+
+    ; now we hold the following
+    ; de - current screen address
+    ; bc - current characted A data address
+    ; hl - current character B data address
+
+    ; do ([d++]e) << (bc++) | (hl++) 8 times
+
+    include "text_ui_routine.inc"
+    inc d
+    include "text_ui_routine.inc"
+    inc d
+    include "text_ui_routine.inc"
+    inc d
+    include "text_ui_routine.inc"
+    inc d
+    include "text_ui_routine.inc"
+    inc d
+    include "text_ui_routine.inc"
+    inc d
+    include "text_ui_routine.inc"
+    inc d
+    include "text_ui_routine.inc"
+
+    inc e                           ; onto next screen address position (horisontally)
+    ld a, d                         ; restore (h)l from 7 increments
     sub 7
-    ld h, a
-    inc bc                          ; onto next character
-    dec ixl                         ; do we have more to print?
+    ld d, a
+
+    dec iyl                         ; do we have more to print?
     ret z                           ; we're done
 
-    ; odd
-    include "text_ui_routine_loop_header.inc"
-
-    include "text_ui_routine_odd.inc"
-    inc h
-    include "text_ui_routine_odd.inc"
-    inc h
-    include "text_ui_routine_odd.inc"
-    inc h
-    include "text_ui_routine_odd.inc"
-    inc h
-    include "text_ui_routine_odd.inc"
-    inc h
-    include "text_ui_routine_odd.inc"
-    inc h
-    include "text_ui_routine_odd.inc"
-    inc h
-    include "text_ui_routine_odd.inc"
-
-    inc hl                          ; onto next screen address position
-    ld a, h                         ; restore (h)l from 7 increments
-    sub 7
-    ld h, a
-    inc bc                          ; onto next character
-    dec ixl                         ; do we have more to print?
-    ret z                           ; we're done
     jp _text_ui_write_loop

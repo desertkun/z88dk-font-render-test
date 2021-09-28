@@ -6,7 +6,7 @@
 extern void text_ui_init(void);
 extern void text_ui_at(uint8_t x, uint8_t y);
 extern void text_ui_puts_at(uint8_t x, uint8_t y, const char* s) __z88dk_callee;
-extern void text_ui_write_at(uint8_t x, uint8_t y, const char* buf, uint16_t buflen) __z88dk_callee;
+extern void text_ui_write_at(uint8_t x, uint8_t y, const char* buf, uint16_t buflen);
 extern char* text_ui_buffer_partition(char *buf, uint16_t buflen, uint8_t allowed_width);
 extern uint16_t text_ui_string_extent(const char *s);
 extern void text_ui_switch_xor(void);
