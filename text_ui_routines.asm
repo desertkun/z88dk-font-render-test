@@ -1,14 +1,9 @@
 EXTERN _text_x
 EXTERN _text_y
 EXTERN asm_zx_cxy2saddr
-EXTERN _font_4x8_80columns
 PUBLIC _text_ui_write
-
-font_even:
-    binary "font_4x8_even.bin"
-
-font_odd:
-    binary "font_4x8_odd.bin"
+EXTERN font_even_index
+EXTERN font_odd_index
 
 ; stack: string to write
 ; stack: amount to write
@@ -33,25 +28,42 @@ _text_ui_write:
     ex de, hl                       ; de now holds a screen address
 
 _text_ui_write_loop:
-    ld h, 0
-    ld l, (ix)
+    ld a, (ix)
+    add a, a
+    ld (_text_ui_write_odd_get + 2), a
+_text_ui_write_odd_get:
+    ld bc, (font_odd_index+0)
+
     inc ix
+    dec iyl
+    jp nz, _text_ui_write_odd
 
-    add hl, hl
-    add hl, hl
-    add hl, hl                      ; multiply by 8
-    add hl, font_odd - 32 * 8
+    include "text_ui_routine_odd.inc"
+    inc d
+    include "text_ui_routine_odd.inc"
+    inc d
+    include "text_ui_routine_odd.inc"
+    inc d
+    include "text_ui_routine_odd.inc"
+    inc d
+    include "text_ui_routine_odd.inc"
+    inc d
+    include "text_ui_routine_odd.inc"
+    inc d
+    include "text_ui_routine_odd.inc"
+    inc d
+    include "text_ui_routine_odd.inc"
 
-    ld bc, hl                       ; bc now holds characted data A
+    ret
 
-    ld h, 0
-    ld l, (ix)
+_text_ui_write_odd:
+    ld a, (ix)
+    add a, a
+    ld (_text_ui_write_even_get + 1), a
+_text_ui_write_even_get:
+    ld hl, (font_even_index)
+
     inc ix
-
-    add hl, hl
-    add hl, hl
-    add hl, hl                      ; multiply by 8
-    add hl, font_even - 32 * 8      ; hl now holds characted data B
 
     ; now we hold the following
     ; de - current screen address

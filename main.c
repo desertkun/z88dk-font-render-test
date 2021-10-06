@@ -16,7 +16,7 @@ int main()
 
     for (uint8_t at = 0; at < 24; at++)
     {
-        text_ui_write_at(0, at, p, 32);
+        text_ui_write_at(0, at, p, 64);
         p += 64;
     }
 
